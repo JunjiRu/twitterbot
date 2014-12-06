@@ -30,3 +30,5 @@
    70  /sbin/iptables -L --line-numbers	開いてるポートとかの確認
    71  service iptables save	#68, #69の設定を保存
    73  /etc/rc.d/init.d/httpd restart	いろいろ変更加えたからとりあえずhttpd再起動
+
+yum -y install php-mysql	phpでmysqliを使えるようにしたかった
