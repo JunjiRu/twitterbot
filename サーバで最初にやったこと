@@ -1,0 +1,32 @@
+タブ区切りになってるのでコピペしてエクセルか何かに貼付けたら見やすいかもかも
+    8  useradd junji	ユーザ追加
+    9  passwd junji	追加したユーザのパスワード設定
+   19  vi /etc/ssh/sshd_config	sshの設定を直す（何したか覚えてない
+   20  service sshd restart	sshd再起動
+   22  vi /etc/sudoers	追加したユーザがsudoできるように
+   24  visudo	#22と一緒．これやると勝手にsudoers開いてくれる
+   27  service sshd restart	
+   34  vi /etc/ssh/sshd_config	sshの設定を直す．rootでログインできなくする
+   36  vi /etc/ssh/sshd_config	sshの設定を直す．Port 22→Port xxxxxに
+   39  service sshd restart	
+   45  yum -y install httpd	httpdインストール
+   46  vi /etc/httpd/conf/httpd.conf	ルートディレクトリ変えたり，ServerTokens Prodにしたり
+   49  vi /var/www/hello.html	http接続できてるか確認するためのhtml作成
+   50  /etc/rc.d/init.d/httpd start	httpd起動
+   51  chkconfig httpd on	再起動時にhttpdが勝手に起動するように
+   52  chkconfig --list httpd	登録されたか確認（？
+   56  yum -y install php php-mbstring	PHPインストール．一応mbstringも
+   57  /etc/rc.d/init.d/httpd restart	
+   58  yum -y install mysql-server	mysqlインストール
+   61  vi /etc/my.cnf	設定いぢる
+   62  /etc/rc.d/init.d/mysqld start	
+   63  chkconfig mysqld on	再起同時に（ry
+   64  mysql_secure_installation	mysqlの初期設定．
+   65  mysql -uroot -p	
+   66  netstat -tanp	開いてるポートとかの確認
+   67  /sbin/iptables -L --line-numbers	開いてるポートとかの確認
+   68  /sbin/iptables -I INPUT 5 -p tcp -m tcp --dport 80 -j ACCEPT	http接続を可能に
+   69  /sbin/iptables -I INPUT 6 -p tcp -m tcp --dport 443 -j ACCEPT	https接続を可能に
+   70  /sbin/iptables -L --line-numbers	開いてるポートとかの確認
+   71  service iptables save	#68, #69の設定を保存
+   73  /etc/rc.d/init.d/httpd restart	いろいろ変更加えたからとりあえずhttpd再起動
