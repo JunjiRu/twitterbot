@@ -8,5 +8,4 @@ while($row = mysqli_fetch_assoc($result)){
 	$text .= $row['id'].':'.$row['data']."\n";
 }
 
-global $twitter;
 $twitter->tweet($text);
