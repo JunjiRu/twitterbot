@@ -1,45 +1,45 @@
 <?php
-require_once('common.php');
+abstract class twitterStreamingAPI{
+	abstract public function inAction($tweetData);
 
-$oauthParam = array(
-	'oauth_consumer_key' => CONSUMER_KEY,
-	'oauth_nonce' => microtime(),
-	'oauth_signature_method' => 'HMAC-SHA1',
-	'oauth_timestamp' => time(),
-	'oauth_token' => ACCESS_TOKEN,
-	'oauth_version' => '1.0',
-);
+	private $con;
+	private $oauthParam;
+	public function __construct(){
+		$this->oauthParam = array(
+			'oauth_consumer_key' => CONSUMER_KEY,
+			'oauth_nonce' => microtime(),
+			'oauth_signature_method' => 'HMAC-SHA1',
+			'oauth_timestamp' => time(),
+			'oauth_token' => ACCESS_TOKEN,
+			'oauth_version' => '1.0',
+		);
 
-foreach($oauthParam as $key => $val){
-	$oauthParam[$key] = encode_rfc3986($val);
-}
+		foreach($this->oauthParam as $key => $val){
+			$this->oauthParam[$key] = OAuthUtil::urlencode_rfc3986($val);
+		}
 
-ksort($oauthParam);
-$base_string =
-	'GET&'.
-	rawurlencode('https://userstream.twitter.com/1.1/user.json').'&'.
-	rawurlencode(http_build_query($oauthParam, '', '&'));
+		ksort($this->oauthParam);
+		$base_string =
+			'GET&'.
+			rawurlencode('https://userstream.twitter.com/1.1/user.json').'&'.
+			rawurlencode(http_build_query($this->oauthParam, '', '&'));
 
-$key = implode('&', array(rawurlencode(CONSUMER_SECRET), rawurlencode(ACCESS_TOKEN_SECRET)));
-$oauthParam['oauth_signature'] = base64_encode(hash_hmac('sha1', $base_string, $key, true));
+		$key = implode('&', array(rawurlencode(CONSUMER_SECRET), rawurlencode(ACCESS_TOKEN_SECRET)));
+		$this->oauthParam['oauth_signature'] = base64_encode(hash_hmac('sha1', $base_string, $key, true));
+		while(!$this->con = fsockopen('ssl://userstream.twitter.com', 443)){}
+	}
 
-$fp = fsockopen('ssl://userstream.twitter.com', 443);
-if($fp){
-	fwrite($fp,
-		"GET https://userstream.twitter.com/1.1/user.json HTTP/1.1\r\n".
-		"Host: userstream.twitter.com\r\n".
-		'Authorization: OAuth ' . http_build_query($oauthParam, '', ',')."\r\n\r\n");
-	while(!feof($fp)){
-		$res = json_decode(fgets($fp), true);
-		if(isset($res['in_reply_to_screen_name']) && $res['in_reply_to_screen_name'] === BOT_SCREEN_NAME){
-			$time = date('H:i:s');
-			$text = "@{$res['user']['screen_name']} へいへいへい {$time}";
-			$twitter->tweet($text, $res['id_str']);
-			echo $res['user']['name'] . ':' . $res['text'] . "\n";
-			break;
+	//この設計マジでキモいので誰か助けてください
+	public function action(){
+		fwrite($this->con,
+			"GET https://userstream.twitter.com/1.1/user.json HTTP/1.1\r\n".
+			"Host: userstream.twitter.com\r\n".
+			'Authorization: OAuth ' . http_build_query($this->oauthParam, '', ',')."\r\n\r\n");
+		while(!feof($this->con)){
+			$res = json_decode(fgets($this->con), true);
+			$this->inAction($res);
 		}
 	}
-	fclose($fp);
 }
 
 /*
