@@ -2,7 +2,6 @@
 mb_internal_encoding('UTF-8');
 ini_set('date.timezone', 'Asia/Tokyo');
 define('appRoot', dirname(__FILE__));
-require_once('common_ini.php');
 
 define('BOT_SCREEN_NAME', 'junjiru_bot');
 

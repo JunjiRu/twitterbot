@@ -6,7 +6,7 @@ class subTwitterStreamingAPI extends twitterStreamingAPI{
 		if( isset($tweetData['in_reply_to_screen_name']) &&
 			$tweetData['in_reply_to_screen_name'] === BOT_SCREEN_NAME)
 		{
-			global $twiRest;
+			$twiRest = new twitterRestAPI();
 			$time = date('H:i:s');
 			$text = "@{$tweetData['user']['screen_name']} へいへいへい {$time}";
 			$twiRest->tweet($text, $tweetData['id_str']);
