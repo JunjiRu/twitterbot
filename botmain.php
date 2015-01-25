@@ -1,11 +1,7 @@
 <?php
 require_once('common.php');
+require_once('watchReplies.php');
 
-$query = 'select * from toriaezu';
-$text = '';
-$result = mysqli_query_ex($query);
-while($row = mysqli_fetch_assoc($result)){
-	$text .= $row['id'].':'.$row['data']."\n";
-}
-
-$twiRest->tweet($text);
+//リプライ監視スタート
+$twiStreaming = new subTwitterStreamingAPI();
+$twiStreaming->action();

@@ -15,7 +15,7 @@
    50  /etc/rc.d/init.d/httpd start	httpd起動
    51  chkconfig httpd on	再起動時にhttpdが勝手に起動するように
    52  chkconfig --list httpd	登録されたか確認（？
-   56  yum -y install php php-mbstring	PHPインストール．一応mbstringも
+   56  yum -y install php php-mbstring php-mysql	PHPインストール．mbstring, mysqliも．
    57  /etc/rc.d/init.d/httpd restart	
    58  yum -y install mysql-server	mysqlインストール
    61  vi /etc/my.cnf	設定いぢる
@@ -30,5 +30,3 @@
    70  /sbin/iptables -L --line-numbers	開いてるポートとかの確認
    71  service iptables save	#68, #69の設定を保存
    73  /etc/rc.d/init.d/httpd restart	いろいろ変更加えたからとりあえずhttpd再起動
-
-yum -y install php-mysql	phpでmysqliを使えるようにしたかった

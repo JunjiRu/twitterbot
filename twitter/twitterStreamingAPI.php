@@ -1,9 +1,9 @@
 <?php
 abstract class twitterStreamingAPI{
-	abstract public function inAction($tweetData);
+	abstract public function inAction($tweetData, $min);
 
-	private $con;
-	private $oauthParam;
+	protected $con;
+	protected $oauthParam;
 	public function __construct(){
 		$this->oauthParam = array(
 			'oauth_consumer_key' => CONSUMER_KEY,
@@ -29,15 +29,17 @@ abstract class twitterStreamingAPI{
 		while(!$this->con = fsockopen('ssl://userstream.twitter.com', 443)){}
 	}
 
-	//この設計マジでキモいので誰か助けてください
 	public function action(){
 		fwrite($this->con,
 			"GET https://userstream.twitter.com/1.1/user.json HTTP/1.1\r\n".
 			"Host: userstream.twitter.com\r\n".
 			'Authorization: OAuth ' . http_build_query($this->oauthParam, '', ',')."\r\n\r\n");
-		while(!feof($this->con)){
-			$res = json_decode(fgets($this->con), true);
-			$this->inAction($res);
+		while(true){
+			$res = array();
+			if(!feof($this->con)){
+				$res = json_decode(fgets($this->con), true);
+				$this->inAction($res);
+			}
 		}
 	}
 }
@@ -45,29 +47,30 @@ abstract class twitterStreamingAPI{
 /*
 ツイートのデータは以下の配列で取得される
 ツイートする時にも同様のパラメータを設定したら幸せになれるかも
+@junjiru から @junjiru_bot へリプライを送った場合
 array(24) {
   ["created_at"]=>
-  string(30) "Sun Dec 07 09:34:58 +0000 2014"
+  string(30) "Wed Dec 10 14:09:18 +0000 2014"
   ["id"]=>
-  int(541526270656278528)
+  int(542682470663991296)
   ["id_str"]=>
-  string(18) "541526270656278528"
+  string(18) "542682470663991296"
   ["text"]=>
-  string(12) "@junjiru aaa"
+  string(17) "@junjiru_bot 4321"
   ["source"]=>
   string(82) "<a href="http://sites.google.com/site/yorufukurou/" rel="nofollow">YoruFukurou</a>"
   ["truncated"]=>
   bool(false)
   ["in_reply_to_status_id"]=>
-  NULL
+  int(542678772328050688)
   ["in_reply_to_status_id_str"]=>
-  NULL
+  string(18) "542678772328050688"
   ["in_reply_to_user_id"]=>
-  int(407670920)
+  int(2921846564)
   ["in_reply_to_user_id_str"]=>
-  string(9) "407670920"
+  string(10) "2921846564"
   ["in_reply_to_screen_name"]=>
-  string(7) "junjiru"
+  string(11) "junjiru_bot"
   ["user"]=>
   array(39) {
     ["id"]=>
@@ -89,15 +92,15 @@ array(24) {
     ["protected"]=>
     bool(false)
     ["followers_count"]=>
-    int(186)
+    int(187)
     ["friends_count"]=>
-    int(114)
+    int(115)
     ["listed_count"]=>
     int(22)
     ["created_at"]=>
     string(30) "Tue Nov 08 11:18:33 +0000 2011"
     ["favourites_count"]=>
-    int(13366)
+    int(13383)
     ["utc_offset"]=>
     int(32400)
     ["time_zone"]=>
@@ -107,7 +110,7 @@ array(24) {
     ["verified"]=>
     bool(false)
     ["statuses_count"]=>
-    int(62115)
+    int(62807)
     ["lang"]=>
     string(2) "ja"
     ["contributors_enabled"]=>
@@ -174,19 +177,19 @@ array(24) {
       [0]=>
       array(5) {
         ["screen_name"]=>
-        string(7) "junjiru"
+        string(11) "junjiru_bot"
         ["name"]=>
-        string(43) "じゅんじ@がんば．．．るぞい！"
+        string(3) "bot"
         ["id"]=>
-        int(407670920)
+        int(2921846564)
         ["id_str"]=>
-        string(9) "407670920"
+        string(10) "2921846564"
         ["indices"]=>
         array(2) {
           [0]=>
           int(0)
           [1]=>
-          int(8)
+          int(12)
         }
       }
     }
@@ -203,6 +206,6 @@ array(24) {
   ["lang"]=>
   string(3) "und"
   ["timestamp_ms"]=>
-  string(13) "1417944898653"
+  string(13) "1418220558216"
 }
  */
