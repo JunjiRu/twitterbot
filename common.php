@@ -13,9 +13,9 @@ define('CONSUMER_SECRET', CONSUMER_SECRET1);
 define('ACCESS_TOKEN', ACCESS_TOKEN1);
 define('ACCESS_TOKEN_SECRET', ACCESS_TOKEN_SECRET1);
 
-require_once(appRoot.'/extendMysqli.php');
-require_once(appRoot.'/twitter/twitterRestAPI.php');
-require_once(appRoot.'/twitter/twitterStreamingAPI.php');
+require_once(appRoot.'/class/utils.php');
+require_once(appRoot.'/class/twitterRestAPI.php');
+require_once(appRoot.'/class/twitterStreamingAPI.php');
 
 define('DB_HOSTNAME', DB_HOSTNAME1);
 define('DB_USERNAME', DB_USERNAME1);

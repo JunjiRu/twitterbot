@@ -1,6 +1,6 @@
 <?php
-require_once(appRoot.'/twitter/OAuth.php');
-require_once(appRoot.'/twitter/twitteroauth.php');
+require_once(appRoot.'/class/OAuth.php');
+require_once(appRoot.'/class/twitteroauth.php');
 
 class twitterRestAPI{
 	private $con;
