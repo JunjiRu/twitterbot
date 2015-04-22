@@ -17,20 +17,11 @@ class subTwitterStreamingAPI extends twitterStreamingAPI{
 			}
 
             if($prevHour !== date('H')){
-                $this->tweetFromTweetBox($twiRest, null, 1);
+                $this->tweetFromTweetBox($twiRest, null, $interval);
                 $prevHour = date('H');
                 $interval++;
-                if($interval%3 === 0){
-                    $this->tweetFromTweetBox($twiRest, null, 3);
-                    if($interval%6 === 0){
-                        $this->tweetFromTweetBox($twiRest, null, 6);
-                        if($interval%12 === 0){
-                            $this->tweetFromTweetBox($twiRest, null, 12);
-                            if($interval%24 === 0){
-                                $this->tweetFromTweetBox($twiRest, null, 24);
-                            }
-                        }
-                    }
+                if($interval%25 === 0){
+                    $interval = 1;
                 }
             }
 		}
@@ -120,7 +111,7 @@ class subTwitterStreamingAPI extends twitterStreamingAPI{
             $query .= " and author = '{$author}'";
         }
         if($interval !== null){
-            $query .= " and `interval` = {$interval}"; 
+            $query .= " and {$interval}%`interval` = 0"; 
         }
         $result = mysqli_query_ex($query);
         while($row = mysqli_fetch_assoc($result)){
@@ -180,13 +171,19 @@ class subTwitterStreamingAPI extends twitterStreamingAPI{
     }
     protected function registerUserMemo($author, $text, $interval){
         $id = '';
+        $count = 0;
         while(true){
             $id = makeRandString(3);
-            $query = "select id from tweet_box where author = '{$author}' and id = '{$id}'";
+            $query = "select count(*) as count from tweet_box where author = '{$author}' and id = '{$id}'";
             $result = mysqli_query_ex($query);
-            if(mysqli_num_rows($result) === 0){
+            $row = mysqli_fetch_assoc($result);
+            if($row['count'] === 0){
                 break;
             }
+            if($count > 30){
+                return false;
+            }
+            $count++;
         }
         $text = mysqli_real_escape_string_ex($text);
         $query = "insert into tweet_box(author, content, `interval`, id)values('{$author}', '{$text}', $interval, '{$id}')";
