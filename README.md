@@ -14,10 +14,3 @@ watchReplies.phpへの機能追加
 
 新ファイル
 　chatworkの未読件数がある場合には30分おきに通知をリプる
-
-$time = now()
-while(true){
-	$now = now()
-	if($time-now()>1h){
-	}
-}
